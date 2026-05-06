@@ -3,9 +3,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import health, orders, tracking
+from app.api.routes import geo, health, orders, tracking
 from app.core.config import get_settings
 from app.db import run_bootstrap_migration
+from app.services.geoip import GeoIPReader
 
 settings = get_settings()
 
@@ -13,7 +14,11 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await run_bootstrap_migration()
-    yield
+    GeoIPReader.instance().open()
+    try:
+        yield
+    finally:
+        GeoIPReader.instance().close()
 
 
 app = FastAPI(title=settings.app_name, lifespan=lifespan)
@@ -27,5 +32,6 @@ app.add_middleware(
 )
 
 app.include_router(health.router, prefix="/api")
+app.include_router(geo.router, prefix="/api")
 app.include_router(orders.router, prefix="/api")
 app.include_router(tracking.router, prefix="/api")

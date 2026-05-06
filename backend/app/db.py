@@ -24,10 +24,16 @@ async def run_bootstrap_migration() -> None:
             payment_method TEXT NOT NULL DEFAULT 'COD',
             event_id TEXT,
             payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+            ip_address TEXT,
+            geo_country TEXT,
+            geo_city TEXT,
             created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
             updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
         );
         """))
+        await conn.execute(text("ALTER TABLE orders ADD COLUMN IF NOT EXISTS ip_address TEXT;"))
+        await conn.execute(text("ALTER TABLE orders ADD COLUMN IF NOT EXISTS geo_country TEXT;"))
+        await conn.execute(text("ALTER TABLE orders ADD COLUMN IF NOT EXISTS geo_city TEXT;"))
         await conn.execute(text("""
         CREATE TABLE IF NOT EXISTS order_items (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

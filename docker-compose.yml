@@ -2,20 +2,44 @@ services:
   frontend:
     build:
       context: ./frontend
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://numapet.store}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.numapet.store}
+        NEXT_PUBLIC_META_PIXEL_ID: ${NEXT_PUBLIC_META_PIXEL_ID:-}
+        NEXT_PUBLIC_TIKTOK_PIXEL_ID: ${NEXT_PUBLIC_TIKTOK_PIXEL_ID:-}
+        NEXT_PUBLIC_SNAP_PIXEL_ID: ${NEXT_PUBLIC_SNAP_PIXEL_ID:-}
+        NEXT_PUBLIC_WHATSAPP_NUMBER: ${NEXT_PUBLIC_WHATSAPP_NUMBER:-50760000000}
     environment:
-      NEXT_PUBLIC_SITE_URL: https://numapet.store
-      NEXT_PUBLIC_API_URL: https://api.numapet.store
+      NODE_ENV: production
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://numapet.store}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.numapet.store}
+    restart: unless-stopped
     ports:
       - "3000:3000"
     depends_on:
       - backend
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   backend:
     build:
       context: ./backend
+    env_file:
+      - ./backend/.env
     environment:
-      APP_ENV: production
-      DATABASE_URL: postgres://numapetstore:numapetstore@numapetstore_database:5432/numapetstore?sslmode=disable
-      CORS_ORIGINS: https://numapet.store,http://localhost:3000
+      APP_ENV: ${APP_ENV:-production}
+      DATABASE_URL: ${DATABASE_URL:-postgres://numapetstore:numapetstore@numapetstore_database:5432/numapetstore?sslmode=disable}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://numapet.store}
+    restart: unless-stopped
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/health').status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s

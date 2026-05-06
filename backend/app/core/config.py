@@ -21,6 +21,11 @@ class Settings(BaseSettings):
     snap_access_token: str | None = None
     snap_ad_account_id: str | None = None
 
+    maxmind_account_id: str | None = None
+    maxmind_license_key: str | None = None
+    maxmind_db_path: str = "/data/geoip/GeoLite2-City.mmdb"
+    geo_allowed_countries: str = "PA"
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     @property
@@ -33,6 +38,10 @@ class Settings(BaseSettings):
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
+
+    @property
+    def allowed_country_list(self) -> list[str]:
+        return [c.strip().upper() for c in self.geo_allowed_countries.split(",") if c.strip()]
 
 
 @lru_cache
