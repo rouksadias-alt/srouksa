@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { CartButton, CartDrawer } from "@/components/CartDrawer";
+import { CartButton, CartDrawer, MobileBuyBar } from "@/components/CartDrawer";
 import { Logo } from "@/components/Logo";
 
 export function SiteHeader() {
@@ -57,9 +57,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="border-b border-[#ead3dd] bg-[#fdebf3] px-5 py-2 text-center text-xs font-black text-[#7b2149]">
         Pago contra entrega · Confirmacion por WhatsApp · Entrega en Panama · Ofertas bundle
       </div>
-      {children}
+      <div className="pb-20 lg:pb-0">{children}</div>
       <SiteFooter />
       <CartDrawer />
+      <MobileBuyBar />
     </>
   );
 }

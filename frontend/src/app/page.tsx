@@ -6,7 +6,7 @@ import {
   FAQSection,
   ReviewsSection,
 } from "@/components/CROSections";
-import { AddOfferButton, OfferSelector } from "@/components/CartDrawer";
+import { AddOfferButton, MobileBuyBar, OfferSelector } from "@/components/CartDrawer";
 import { AppShell } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { products } from "@/config/products";
@@ -15,40 +15,57 @@ export default function Home() {
   return (
     <AppShell>
       <main className="bg-[#fff7fb] text-[#2a1620]">
-        <section className="relative overflow-hidden border-b border-[#ead3dd] bg-[radial-gradient(circle_at_20%_20%,#fde1ee,transparent_35%),linear-gradient(180deg,#fff7fb,#fdeef5)] px-5 py-14 lg:py-20">
-          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-center">
-            <div className="text-center lg:text-left">
-              <p className="text-xs font-black uppercase tracking-[0.25em] text-[#b4155a]">
-                Numapet Ritual
+        <section className="relative overflow-hidden border-b border-[#ead3dd] bg-[radial-gradient(circle_at_20%_20%,#fde1ee,transparent_35%),linear-gradient(180deg,#fff7fb,#fdeef5)] px-5 py-8 lg:py-20">
+          <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:gap-10">
+            <div className="order-2 text-center lg:order-1 lg:text-left">
+              <p className="text-[11px] font-black uppercase tracking-[0.25em] text-[#b4155a]">
+                Numapet Ritual · Panamá
               </p>
-              <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-black leading-tight tracking-tight md:text-6xl lg:mx-0">
-                Cuando tu mascota vive mejor, tu casa tambien respira.
-              </h1>
-              <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-[#6c4a58] lg:mx-0">
-                Kits premium para hogares con mascotas en Panama: menos pelos,
-                agua mas atractiva y juego inteligente sin complicarte.
-              </p>
-              <div className="mt-5 flex flex-wrap justify-center gap-4 text-sm font-bold text-[#4f7a58] lg:justify-start">
-                <span>✓ Pago contra entrega</span>
-                <span>✓ Confirmacion +507</span>
-                <span>✓ Ofertas por bundle</span>
+              <div className="mt-2 flex items-center justify-center gap-2 text-sm font-bold text-[#2a1620] lg:justify-start">
+                <span className="text-amber-500">★★★★★</span>
+                <span>4.9/5</span>
+                <span className="text-[#7b5867]">· +2,000 hogares panameños</span>
               </div>
-              <div className="mx-auto mt-8 max-w-xl lg:mx-0">
+              <h1 className="mx-auto mt-3 max-w-3xl text-3xl font-black leading-[1.1] tracking-tight md:text-5xl lg:mx-0 lg:text-6xl">
+                Alfombra refrescante premium para tu mascota.
+              </h1>
+              <p className="mx-auto mt-3 max-w-2xl text-base leading-7 text-[#6c4a58] md:text-lg md:leading-8 lg:mx-0">
+                Descanso fresco sin prender más aire. Lavable, antideslizante y lista para el calor de Panamá.
+              </p>
+              <div className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-1.5 text-sm font-bold text-[#4f7a58] lg:justify-start">
+                <span>✓ Pago contra entrega</span>
+                <span>✓ Envío en Panamá</span>
+                <span>✓ Garantía 30 días</span>
+              </div>
+
+              <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-[#ead3dd] bg-white/70 px-4 py-3 text-center lg:mx-0 lg:text-left">
+                <p className="text-xs font-bold uppercase tracking-wider text-[#7b5867]">
+                  Desde
+                </p>
+                <p className="mt-0.5 text-2xl font-black text-[#2a1620]">
+                  $45 <span className="text-sm font-bold text-[#7b5867]">· COD disponible</span>
+                </p>
+              </div>
+
+              <div className="mx-auto mt-5 max-w-xl lg:mx-0">
                 <OfferSelector productSlug="pelocero-casa-kit" />
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-[#ead3dd] bg-white p-4 shadow-sm">
-              <div className="relative min-h-[360px] overflow-hidden rounded-[1.5rem] bg-white">
+            <div className="order-1 rounded-[1.5rem] border border-[#ead3dd] bg-white p-3 shadow-sm lg:order-2 lg:rounded-[2rem] lg:p-4">
+              <div className="relative min-h-[240px] overflow-hidden rounded-[1.25rem] bg-white sm:min-h-[300px] lg:min-h-[360px] lg:rounded-[1.5rem]">
                 <Image
                   src="/products/cooling-mat-hero.png"
                   alt="PeloCero Fresh Mat para mascotas"
                   fill
                   priority
-                  className="object-contain p-5"
+                  className="object-contain p-3 lg:p-5"
                 />
+                <span className="absolute left-3 top-3 rounded-full bg-[#b4155a] px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-sm">
+                  Best seller
+                </span>
               </div>
-              <div className="p-5">
+              <div className="hidden p-5 lg:block">
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-[#b4155a]">
                   Producto destacado
                 </p>

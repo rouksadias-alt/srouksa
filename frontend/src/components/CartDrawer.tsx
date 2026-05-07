@@ -281,27 +281,84 @@ export function AddOfferButton({ productSlug, offerId = "two" }: { productSlug: 
 export function OfferSelector({ productSlug }: { productSlug: ProductSlug }) {
   const addOffer = useCartStore((state) => state.addOffer);
   return (
-    <div className="grid gap-3 sm:grid-cols-3">
-      {offers.map((offer) => (
-        <button
-          key={offer.id}
-          onClick={() => addOffer(productSlug, offer.id)}
-          className={`min-h-36 rounded-3xl border p-5 text-left transition hover:border-[#b4155a] ${
-            offer.id === "two"
-              ? "border-2 border-[#b4155a] bg-white shadow-sm ring-4 ring-[#f2c6d8]"
-              : "border-[#ead3dd] bg-white"
-          }`}
-        >
-          <p className="text-sm font-bold text-[#7b5867]">{offer.anchor}</p>
-          <p className="mt-2 text-xl font-black text-[#2a1620]">{offer.label}</p>
-          <p className="mt-4 text-4xl font-black tracking-tight text-[#b4155a]">
-            ${offer.price}
-          </p>
-          {offer.badge ? (
-            <p className="mt-2 text-sm font-black text-[#0f766e]">{offer.badge}</p>
-          ) : null}
-        </button>
-      ))}
+    <div className="flex flex-col gap-2.5 sm:grid sm:grid-cols-3 sm:gap-3">
+      {offers.map((offer) => {
+        const isPopular = offer.id === "two";
+        return (
+          <button
+            key={offer.id}
+            onClick={() => addOffer(productSlug, offer.id)}
+            className={`group relative flex w-full items-center justify-between gap-3 rounded-2xl border p-4 text-left transition active:scale-[0.99] hover:border-[#b4155a] sm:flex-col sm:items-start sm:justify-start sm:gap-0 sm:rounded-3xl sm:p-5 sm:min-h-36 ${
+              isPopular
+                ? "border-2 border-[#b4155a] bg-[#fff5f9] shadow-sm ring-2 ring-[#f2c6d8] sm:ring-4"
+                : "border-[#ead3dd] bg-white"
+            }`}
+          >
+            {isPopular ? (
+              <span className="absolute -top-2.5 left-4 rounded-full bg-[#b4155a] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow-sm sm:left-1/2 sm:-translate-x-1/2">
+                ⭐ Más elegido
+              </span>
+            ) : null}
+
+            <div className="flex-1 sm:w-full">
+              <p className="hidden text-xs font-bold uppercase tracking-wider text-[#7b5867] sm:block">
+                {offer.anchor}
+              </p>
+              <p className="text-base font-black leading-tight text-[#2a1620] sm:mt-2 sm:text-xl">
+                {offer.label}
+              </p>
+              <p className="text-xs text-[#7b5867] sm:hidden">
+                {offer.anchor}
+              </p>
+            </div>
+
+            <div className="flex flex-col items-end gap-0.5 sm:mt-4 sm:w-full sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-2xl font-black tracking-tight text-[#b4155a] sm:text-4xl">
+                ${offer.price}
+              </p>
+              {offer.badge ? (
+                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-black text-emerald-700 sm:bg-transparent sm:px-0 sm:text-sm sm:text-[#0f766e]">
+                  {offer.badge}
+                </span>
+              ) : null}
+            </div>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export function MobileBuyBar({
+  productSlug = "pelocero-casa-kit",
+  offerId = "two",
+}: {
+  productSlug?: ProductSlug;
+  offerId?: Offer["id"];
+}) {
+  const addOffer = useCartStore((state) => state.addOffer);
+  const openCart = useCartStore((state) => state.openCart);
+  const offer = offers.find((o) => o.id === offerId);
+  if (!offer) return null;
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#ead3dd] bg-white/95 px-4 py-3 shadow-[0_-8px_24px_-12px_rgba(180,21,90,0.25)] backdrop-blur lg:hidden">
+      <button
+        onClick={() => {
+          addOffer(productSlug, offerId);
+          openCart();
+        }}
+        className="flex w-full items-center justify-between gap-3 rounded-full bg-[#b4155a] px-5 py-3.5 text-white shadow-md transition active:scale-[0.99]"
+      >
+        <div className="flex flex-col items-start leading-tight">
+          <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">
+            ⭐ Más elegido · {offer.label}
+          </span>
+          <span className="text-base font-black">Comprar ahora — ${offer.price}</span>
+        </div>
+        <span className="rounded-full bg-white/15 px-3 py-1.5 text-sm font-black">
+          →
+        </span>
+      </button>
     </div>
   );
 }
