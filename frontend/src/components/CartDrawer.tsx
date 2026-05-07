@@ -167,85 +167,124 @@ export function CartDrawer() {
       </aside>
 
       {checkoutState === "checkout" ? (
-        <div className="fixed inset-0 z-[60] grid place-items-center bg-slate-950/60 p-4">
-          <form onSubmit={form.handleSubmit(submitOrder)} className="w-full max-w-lg rounded-3xl bg-white p-6 text-slate-950">
-            <p className="font-bold text-teal-700">Datos para confirmar entrega</p>
-            <h2 className="mt-2 text-3xl font-black">Confirma tu pedido COD</h2>
-            <p className="mt-3 text-sm text-slate-600">
-              Cupos de entrega contra entrega limitados por dia. No pagas ahora.
-            </p>
-            <label className="mt-5 block text-sm font-bold">Nombre y Apellido</label>
-            <input className="mt-2 w-full rounded-2xl border border-slate-300 p-4" placeholder="Nombre y Apellido" {...form.register("fullName")} />
-            <p className="mt-1 text-sm text-red-600">{form.formState.errors.fullName?.message}</p>
-            <label className="mt-4 block text-sm font-bold">Telefono</label>
-            <input className="mt-2 w-full rounded-2xl border border-slate-300 p-4" placeholder="Telefono" {...form.register("phone")} />
-            <p className="mt-1 text-sm text-red-600">{form.formState.errors.phone?.message}</p>
-            <label className="mt-4 block text-sm font-bold">Direccion</label>
-            <input className="mt-2 w-full rounded-2xl border border-slate-300 p-4" placeholder="Direccion" {...form.register("address")} />
-            <p className="mt-1 text-sm text-red-600">{form.formState.errors.address?.message}</p>
-            <label className="mt-4 block text-sm font-bold">Ciudad</label>
-            <input className="mt-2 w-full rounded-2xl border border-slate-300 p-4" placeholder="Ciudad" {...form.register("city")} />
-            <p className="mt-1 text-sm text-red-600">{form.formState.errors.city?.message}</p>
-            <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-[#ead3dd] bg-[#fff7fb] p-4">
+        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-slate-950/60 sm:items-center sm:p-4">
+          <form
+            onSubmit={form.handleSubmit(submitOrder)}
+            className="flex max-h-[95dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl bg-white text-slate-950 shadow-2xl sm:max-h-[90dvh] sm:rounded-3xl"
+          >
+            <div className="flex-1 overflow-y-auto px-5 pb-5 pt-6 sm:px-6 sm:pt-7">
+              <p className="font-bold text-teal-700">Datos para confirmar entrega</p>
+              <h2 className="mt-1 text-2xl font-black sm:text-3xl">Confirma tu pedido COD</h2>
+              <p className="mt-2 text-sm text-slate-600">
+                Cupos de entrega contra entrega limitados por dia. No pagas ahora.
+              </p>
+
+              <label className="mt-4 block text-sm font-bold">Nombre y Apellido</label>
               <input
-                type="checkbox"
-                className="mt-1 size-5 accent-[#b4155a]"
-                {...form.register("fastShipping")}
+                className="mt-2 w-full rounded-2xl border border-slate-300 p-3.5"
+                placeholder="Nombre y Apellido"
+                autoComplete="name"
+                {...form.register("fullName")}
               />
-              <span>
-                <span className="block font-black text-[#2a1620]">
-                  Agregar envio rapido +$2
+              <p className="mt-1 text-sm text-red-600">{form.formState.errors.fullName?.message}</p>
+
+              <label className="mt-3 block text-sm font-bold">Telefono</label>
+              <input
+                className="mt-2 w-full rounded-2xl border border-slate-300 p-3.5"
+                placeholder="6XXX-XXXX"
+                inputMode="tel"
+                autoComplete="tel"
+                {...form.register("phone")}
+              />
+              <p className="mt-1 text-sm text-red-600">{form.formState.errors.phone?.message}</p>
+
+              <label className="mt-3 block text-sm font-bold">Direccion</label>
+              <input
+                className="mt-2 w-full rounded-2xl border border-slate-300 p-3.5"
+                placeholder="Direccion"
+                autoComplete="street-address"
+                {...form.register("address")}
+              />
+              <p className="mt-1 text-sm text-red-600">{form.formState.errors.address?.message}</p>
+
+              <label className="mt-3 block text-sm font-bold">Ciudad</label>
+              <input
+                className="mt-2 w-full rounded-2xl border border-slate-300 p-3.5"
+                placeholder="Ciudad"
+                autoComplete="address-level2"
+                {...form.register("city")}
+              />
+              <p className="mt-1 text-sm text-red-600">{form.formState.errors.city?.message}</p>
+
+              <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-2xl border border-[#ead3dd] bg-[#fff7fb] p-3.5">
+                <input
+                  type="checkbox"
+                  className="mt-1 size-5 accent-[#b4155a]"
+                  {...form.register("fastShipping")}
+                />
+                <span>
+                  <span className="block font-black text-[#2a1620]">
+                    Agregar envio rapido +$2
+                  </span>
+                  <span className="mt-1 block text-sm text-[#6c4a58]">
+                    Prioridad de confirmacion y despacho en zonas disponibles.
+                  </span>
                 </span>
-                <span className="mt-1 block text-sm text-[#6c4a58]">
-                  Prioridad de confirmacion y despacho en zonas disponibles.
-                </span>
-              </span>
-            </label>
-            <div className="mt-5 rounded-2xl bg-slate-100 p-4">
-              <div className="flex justify-between text-sm text-slate-600">
-                <span>Productos</span>
-                <span>${total}</span>
-              </div>
-              <div className="mt-2 flex justify-between text-sm text-slate-600">
-                <span>Envio rapido</span>
-                <span>{fastShippingSelected ? "$2" : "$0"}</span>
-              </div>
-              <div className="mt-3 flex justify-between border-t border-slate-300 pt-3 text-xl font-black">
-                <span>Total</span>
-                <span>${checkoutTotal}</span>
-              </div>
-            </div>
-            
-            <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] font-bold text-slate-700 sm:grid-cols-4">
-              {[
-                ["💵", "Paga al recibir"],
-                ["🚚", "Envío Panamá"],
-                ["↩️", "Garantía 30 días"],
-                ["💬", "Soporte WhatsApp"],
-              ].map(([icon, label]) => (
-                <div
-                  key={label}
-                  className="flex flex-col items-center gap-1 rounded-xl bg-slate-50 px-2 py-2 text-center"
-                >
-                  <span className="text-base">{icon}</span>
-                  <span className="leading-tight">{label}</span>
+              </label>
+
+              <div className="mt-4 rounded-2xl bg-slate-100 p-4">
+                <div className="flex justify-between text-sm text-slate-600">
+                  <span>Productos</span>
+                  <span>${total}</span>
                 </div>
-              ))}
+                <div className="mt-2 flex justify-between text-sm text-slate-600">
+                  <span>Envio rapido</span>
+                  <span>{fastShippingSelected ? "$2" : "$0"}</span>
+                </div>
+                <div className="mt-3 flex justify-between border-t border-slate-300 pt-3 text-xl font-black">
+                  <span>Total</span>
+                  <span>${checkoutTotal}</span>
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] font-bold text-slate-700 sm:grid-cols-4">
+                {[
+                  ["💵", "Paga al recibir"],
+                  ["🚚", "Envío Panamá"],
+                  ["↩️", "Garantía 30 días"],
+                  ["💬", "Soporte WhatsApp"],
+                ].map(([icon, label]) => (
+                  <div
+                    key={label}
+                    className="flex flex-col items-center gap-1 rounded-xl bg-slate-50 px-2 py-2 text-center"
+                  >
+                    <span className="text-base">{icon}</span>
+                    <span className="leading-tight">{label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="mt-3 flex items-center justify-center gap-1 text-[11px] text-slate-500 font-medium">
-              <span className="text-teal-600">🔒</span> Tus datos están seguros. Solo los usamos para coordinar tu entrega.
+            <div className="border-t border-slate-200 bg-white px-5 py-4 shadow-[0_-8px_16px_-8px_rgba(0,0,0,0.08)] sm:px-6">
+              <div className="mb-2 flex items-center justify-between text-sm">
+                <span className="font-bold text-slate-600">Total a pagar al recibir</span>
+                <span className="text-lg font-black text-[#2a1620]">${checkoutTotal}</span>
+              </div>
+              <button className="w-full rounded-full bg-[#b4155a] px-6 py-3.5 text-base font-black text-white shadow-md transition active:scale-[0.99] hover:bg-[#95104a]">
+                Confirmar mi pedido — Pago al recibir
+              </button>
+              <div className="mt-2 flex items-center justify-center gap-3 text-[11px] font-bold text-slate-500">
+                <span>✓ Sin compromiso</span>
+                <span>·</span>
+                <button
+                  type="button"
+                  onClick={closeCheckout}
+                  className="underline-offset-2 hover:underline"
+                >
+                  Volver
+                </button>
+              </div>
             </div>
-
-            <button className="mt-3 w-full rounded-full bg-[#b4155a] px-6 py-4 font-black text-white shadow-md transition active:scale-[0.99] hover:bg-[#95104a]">
-              Confirmar mi pedido — Pago al recibir
-            </button>
-            <p className="mt-2 text-center text-[11px] font-bold text-slate-500">
-              ✓ Reserva sin compromiso · Confirmamos por teléfono
-            </p>
-            <button type="button" onClick={closeCheckout} className="mt-3 w-full text-sm font-bold text-slate-500">
-              Volver
-            </button>
           </form>
         </div>
       ) : null}
