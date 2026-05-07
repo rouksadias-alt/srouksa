@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { CartButton, CartDrawer, MobileBuyBar } from "@/components/CartDrawer";
 import { Logo } from "@/components/Logo";
+import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 
 export function SiteHeader() {
   return (
@@ -61,6 +62,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <SiteFooter />
       <CartDrawer />
       <MobileBuyBar />
+      <WhatsAppFloat />
     </>
   );
 }

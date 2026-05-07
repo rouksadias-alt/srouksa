@@ -38,17 +38,44 @@ export default function Home() {
                 <span>✓ Garantía 30 días</span>
               </div>
 
-              <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-[#ead3dd] bg-white/70 px-4 py-3 text-center lg:mx-0 lg:text-left">
-                <p className="text-xs font-bold uppercase tracking-wider text-[#7b5867]">
-                  Desde
-                </p>
-                <p className="mt-0.5 text-2xl font-black text-[#2a1620]">
-                  $45 <span className="text-sm font-bold text-[#7b5867]">· COD disponible</span>
-                </p>
+              <div className="mx-auto mt-5 grid max-w-xl gap-2 lg:mx-0">
+                {[
+                  {
+                    quote: "Por fin mi sala no huele a perrito mojado. A mi perro le encantó.",
+                    name: "María C.",
+                    city: "Ciudad de Panamá",
+                  },
+                  {
+                    quote: "Compré el pack de 2. Alivio total con los pelos en muebles.",
+                    name: "Carmen R.",
+                    city: "San Francisco",
+                  },
+                ].map((r) => (
+                  <div
+                    key={r.name}
+                    className="flex items-start gap-3 rounded-2xl border border-[#ead3dd] bg-white/80 px-3 py-2.5 text-left"
+                  >
+                    <div className="grid size-9 shrink-0 place-items-center rounded-full bg-[#b4155a] text-sm font-black text-white">
+                      {r.name.charAt(0)}
+                    </div>
+                    <div className="flex-1 leading-tight">
+                      <p className="text-xs font-black text-amber-500">★★★★★</p>
+                      <p className="mt-0.5 text-sm text-[#2a1620]">
+                        “{r.quote}”
+                      </p>
+                      <p className="mt-0.5 text-[11px] font-bold text-[#7b5867]">
+                        {r.name} · {r.city}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className="mx-auto mt-5 max-w-xl lg:mx-0">
                 <OfferSelector productSlug="pelocero-casa-kit" />
+                <p className="mt-3 text-center text-xs text-[#7b5867] lg:text-left">
+                  ✓ No te cobramos ahora · Confirmamos por teléfono primero
+                </p>
               </div>
             </div>
 

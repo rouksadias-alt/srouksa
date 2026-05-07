@@ -156,10 +156,13 @@ export function CartDrawer() {
           <button
             disabled={lines.length === 0}
             onClick={openCheckout}
-            className="mt-4 w-full rounded-full bg-slate-950 px-6 py-4 font-black text-white disabled:opacity-40"
+            className="mt-4 w-full rounded-full bg-[#b4155a] px-6 py-4 font-black text-white shadow-md transition active:scale-[0.99] hover:bg-[#95104a] disabled:opacity-40"
           >
-            Confirmar pedido
+            Reservar mi pedido — Pago al recibir
           </button>
+          <p className="mt-2 text-center text-[11px] font-bold text-slate-500">
+            ✓ No te cobramos ahora · ✓ Confirmamos por teléfono
+          </p>
         </div>
       </aside>
 
@@ -213,15 +216,33 @@ export function CartDrawer() {
               </div>
             </div>
             
-            <div className="mt-4 flex flex-col items-center justify-center gap-2 text-xs text-slate-500 font-medium">
-              <div className="flex items-center gap-1">
-                <span className="text-teal-600 text-base">🔒</span> Tus datos están seguros. Solo los usamos para coordinar tu entrega.
-              </div>
+            <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] font-bold text-slate-700 sm:grid-cols-4">
+              {[
+                ["💵", "Paga al recibir"],
+                ["🚚", "Envío Panamá"],
+                ["↩️", "Garantía 30 días"],
+                ["💬", "Soporte WhatsApp"],
+              ].map(([icon, label]) => (
+                <div
+                  key={label}
+                  className="flex flex-col items-center gap-1 rounded-xl bg-slate-50 px-2 py-2 text-center"
+                >
+                  <span className="text-base">{icon}</span>
+                  <span className="leading-tight">{label}</span>
+                </div>
+              ))}
             </div>
 
-            <button className="mt-3 w-full rounded-full bg-teal-700 px-6 py-4 font-black text-white shadow-md hover:bg-teal-800 transition-colors">
-              Confirmar mi pedido contra entrega
+            <div className="mt-3 flex items-center justify-center gap-1 text-[11px] text-slate-500 font-medium">
+              <span className="text-teal-600">🔒</span> Tus datos están seguros. Solo los usamos para coordinar tu entrega.
+            </div>
+
+            <button className="mt-3 w-full rounded-full bg-[#b4155a] px-6 py-4 font-black text-white shadow-md transition active:scale-[0.99] hover:bg-[#95104a]">
+              Confirmar mi pedido — Pago al recibir
             </button>
+            <p className="mt-2 text-center text-[11px] font-bold text-slate-500">
+              ✓ Reserva sin compromiso · Confirmamos por teléfono
+            </p>
             <button type="button" onClick={closeCheckout} className="mt-3 w-full text-sm font-bold text-slate-500">
               Volver
             </button>
@@ -271,9 +292,13 @@ export function CartButton() {
 
 export function AddOfferButton({ productSlug, offerId = "two" }: { productSlug: ProductSlug; offerId?: Offer["id"] }) {
   const addOffer = useCartStore((state) => state.addOffer);
+  const offer = offers.find((o) => o.id === offerId);
   return (
-    <button onClick={() => addOffer(productSlug, offerId)} className="rounded-full bg-[#b4155a] px-6 py-3 text-center font-black text-white transition hover:bg-[#95104a]">
-      Agregar oferta al carrito
+    <button
+      onClick={() => addOffer(productSlug, offerId)}
+      className="w-full rounded-full bg-[#b4155a] px-6 py-3.5 text-center font-black text-white shadow-md transition active:scale-[0.99] hover:bg-[#95104a]"
+    >
+      {offer ? `Lo quiero — ${offer.label} · $${offer.price}` : "Agregar al carrito"}
     </button>
   );
 }
