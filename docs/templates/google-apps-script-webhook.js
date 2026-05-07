@@ -1,110 +1,111 @@
-const SECRET = PropertiesService.getScriptProperties().getProperty("WEBHOOK_SECRET");
+/**
+ * Numapetstore — Google Sheets Webhook (Apps Script)
+ *
+ * Receives orders from the FastAPI backend and appends them as rows.
+ * Auto-creates the "Orders" tab and header row on first call.
+ *
+ * Setup:
+ *   1. Open https://sheets.google.com → create a new sheet (or open existing).
+ *   2. Extensions → Apps Script. Paste this entire file. Save (Ctrl+S).
+ *   3. (Optional) Set a secret: Project Settings → Script properties →
+ *      Add property `WEBHOOK_SECRET` with a long random string.
+ *   4. Deploy → New deployment → Type: Web app
+ *      - Execute as: Me
+ *      - Who has access: Anyone
+ *      - Click Deploy → copy the Web app URL.
+ *   5. Paste that URL in Easypanel backend env as GOOGLE_SHEETS_WEBHOOK_URL
+ *      and the same secret as GOOGLE_SHEETS_WEBHOOK_SECRET (if you set one).
+ *   6. Redeploy backend. Place a test order. The Orders tab fills up.
+ *
+ * Re-deploy after editing: Deploy → Manage deployments → pencil icon → New version.
+ */
+
 const ORDERS_SHEET = "Orders";
-const EVENTS_SHEET = "Events";
+
+const HEADERS = [
+  "Created At",
+  "Order Number",
+  "Status",
+  "Customer Name",
+  "Phone (E.164)",
+  "Phone (raw)",
+  "Address",
+  "City",
+  "Country",
+  "Geo City",
+  "Total",
+  "Currency",
+  "Items",
+  "Fast Shipping",
+  "Shipping Total",
+  "IP",
+  "Event ID",
+  "Order ID",
+];
 
 function doPost(e) {
   try {
     const body = JSON.parse(e.postData.contents || "{}");
 
-    if (!SECRET || body.secret !== SECRET) {
-      return jsonResponse({ ok: false, error: "unauthorized" }, 401);
+    const expectedSecret = PropertiesService.getScriptProperties().getProperty("WEBHOOK_SECRET");
+    if (expectedSecret && body.secret !== expectedSecret) {
+      return json({ ok: false, error: "unauthorized" });
     }
 
-    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-
-    if (body.type === "order") {
-      appendOrder(spreadsheet, body);
-      return jsonResponse({ ok: true, type: "order" }, 200);
+    if (body.type !== "order" || !body.order) {
+      return json({ ok: false, error: "invalid_payload" });
     }
 
-    if (body.type === "event") {
-      appendEvent(spreadsheet, body);
-      return jsonResponse({ ok: true, type: "event" }, 200);
-    }
-
-    return jsonResponse({ ok: false, error: "unknown_type" }, 400);
-  } catch (error) {
-    return jsonResponse({ ok: false, error: String(error) }, 500);
+    appendOrder(body.order);
+    return json({ ok: true });
+  } catch (err) {
+    return json({ ok: false, error: String(err) });
   }
 }
 
-function appendOrder(spreadsheet, body) {
-  const sheet = getOrCreateSheet(spreadsheet, ORDERS_SHEET);
-  const order = body.order || {};
-  const tracking = body.tracking || {};
+function doGet() {
+  // Health check — visit the deployment URL in a browser to confirm it's live.
+  return json({ ok: true, service: "numapet-sheets-webhook" });
+}
+
+function appendOrder(order) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(ORDERS_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(ORDERS_SHEET);
+  }
+
+  // Ensure header row exists.
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(HEADERS);
+    sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight("bold");
+    sheet.setFrozenRows(1);
+  }
 
   sheet.appendRow([
-    order.order_id || "",
-    order.order_number || "",
-    order.status || "",
     order.created_at || new Date().toISOString(),
+    order.order_number || "",
+    order.status || "pending_confirmation",
     order.customer_name || "",
-    order.phone_raw || "",
     order.phone_e164 || "",
-    order.country || "PA",
+    order.phone_raw || "",
+    order.address || "",
+    order.city || "",
+    order.geo_country || "",
+    order.geo_city || "",
+    order.total || 0,
     order.currency || "USD",
-    order.subtotal || "",
-    order.discount_total || "",
-    order.shipping_total || "",
-    order.total || "",
-    order.payment_method || "COD",
-    JSON.stringify(body.items || []),
-    JSON.stringify(body.upsells || []),
-    tracking.source || "",
-    tracking.landing_page || "",
-    tracking.referrer || "",
-    tracking.utm_source || "",
-    tracking.utm_medium || "",
-    tracking.utm_campaign || "",
-    tracking.utm_content || "",
-    tracking.utm_term || "",
-    tracking.fbp || "",
-    tracking.fbc || "",
-    tracking.ttp || "",
-    tracking.ttclid || "",
-    tracking.scid || "",
-    tracking.snap_click_id || "",
-    tracking.event_id || "",
-    tracking.ip_address || "",
-    tracking.user_agent || "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
+    order.items_summary || "",
+    order.fast_shipping ? "yes" : "no",
+    order.shipping_total || 0,
+    order.ip_address || "",
+    order.event_id || "",
+    order.order_id || "",
   ]);
 }
 
-function appendEvent(spreadsheet, body) {
-  const sheet = getOrCreateSheet(spreadsheet, EVENTS_SHEET);
-  const event = body.event || {};
-
-  sheet.appendRow([
-    event.event_id || "",
-    event.order_id || "",
-    event.event_name || "",
-    event.provider || "",
-    event.success || false,
-    event.status_code || "",
-    event.created_at || new Date().toISOString(),
-    event.value || "",
-    event.currency || "USD",
-    event.product_slug || "",
-    event.url || "",
-    event.utm_source || "",
-    event.utm_medium || "",
-    event.utm_campaign || "",
-    event.response_text || "",
-  ]);
-}
-
-function getOrCreateSheet(spreadsheet, name) {
-  return spreadsheet.getSheetByName(name) || spreadsheet.insertSheet(name);
-}
-
-function jsonResponse(payload, statusCode) {
+function json(payload) {
   return ContentService
-    .createTextOutput(JSON.stringify({ ...payload, statusCode }))
+    .createTextOutput(JSON.stringify(payload))
     .setMimeType(ContentService.MimeType.JSON);
 }
