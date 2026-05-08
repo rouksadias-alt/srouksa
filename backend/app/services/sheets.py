@@ -16,15 +16,33 @@ logger = logging.getLogger(__name__)
 
 
 async def _post(url: str, payload: dict[str, Any]) -> None:
+    """POST with manual redirect handling that preserves method+body.
+
+    Google Apps Script /exec returns 302 to script.googleusercontent.com.
+    Most HTTP clients (httpx, curl -L) convert POST→GET on 302 per RFC 7231,
+    which drops the body. We re-POST to the Location target ourselves.
+    """
     try:
-        async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
-            resp = await client.post(url, json=payload)
+        headers = {"Content-Type": "application/json"}
+        async with httpx.AsyncClient(timeout=15.0, follow_redirects=False) as client:
+            current_url = url
+            for _ in range(5):
+                resp = await client.post(current_url, json=payload, headers=headers)
+                if resp.status_code in (301, 302, 303, 307, 308):
+                    location = resp.headers.get("location")
+                    if not location:
+                        break
+                    current_url = location
+                    continue
+                break
             if resp.status_code >= 400:
                 logger.warning(
                     "sheets webhook non-2xx status=%s body=%s",
                     resp.status_code,
                     resp.text[:200],
                 )
+            else:
+                logger.info("sheets webhook ok status=%s", resp.status_code)
     except Exception as exc:  # pragma: no cover — webhook must never break checkout
         logger.warning("sheets webhook failed: %s", exc)
 
