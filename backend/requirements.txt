@@ -5,3 +5,4 @@ asyncpg==0.31.0
 alembic==1.17.2
 httpx==0.28.1
 geoip2==4.8.0
+itsdangerous==2.2.0

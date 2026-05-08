@@ -28,6 +28,16 @@ class Settings(BaseSettings):
     maxmind_db_path: str = "/data/geoip/GeoLite2-City.mmdb"
     geo_allowed_countries: str = "PA"
 
+    # Admin dashboard auth
+    admin_username: str | None = None
+    admin_password: str | None = None
+    admin_session_secret: str = "change-me-in-prod"
+    admin_session_max_age: int = 60 * 60 * 24 * 7  # 7 days
+
+    # VPN / proxy detection (vpnapi.io free tier: 1000/day)
+    vpnapi_key: str | None = None
+    proxycheck_key: str | None = None  # alternative provider
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     @property

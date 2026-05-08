@@ -83,6 +83,10 @@ export function CartDrawer() {
           quantity: line.offer.quantity,
           price: line.offer.price,
         })),
+        session_id:
+          typeof window !== "undefined"
+            ? sessionStorage.getItem("nmp_sid")
+            : null,
       }),
     }).catch(() => null);
 

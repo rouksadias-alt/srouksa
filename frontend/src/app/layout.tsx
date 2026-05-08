@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Suspense } from "react";
 import { GeoBanner } from "@/components/GeoBanner";
+import { PageTracker } from "@/components/PageTracker";
 import { TrackingPixels } from "@/components/TrackingPixels";
 import "./globals.css";
 
@@ -33,6 +35,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <GeoBanner />
         {children}
+        <Suspense fallback={null}>
+          <PageTracker />
+        </Suspense>
         <TrackingPixels />
       </body>
     </html>

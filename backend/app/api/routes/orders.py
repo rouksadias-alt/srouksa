@@ -11,6 +11,7 @@ from app.services.geoip import GeoIPReader, get_client_ip
 from app.services.phone import normalize_panama_phone
 from app.services.sheets import push_order_async
 from app.services.telegram import push_order_async as push_telegram_async
+from app.services.vpn import is_vpn
 
 router = APIRouter(prefix="/orders")
 
@@ -35,6 +36,7 @@ class OrderCreate(BaseModel):
     total: float = Field(ge=0)
     items: list[OrderItemIn]
     tracking: dict[str, Any] = {}
+    session_id: str | None = None
 
 
 @router.post("")
@@ -48,6 +50,7 @@ async def create_order(payload: OrderCreate, request: Request):
         request.client.host if request.client else None,
     )
     geo = GeoIPReader.instance().lookup(ip)
+    vpn_flag = await is_vpn(ip)
 
     order_number = f"NMP-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
     request_payload = payload.model_dump()
@@ -61,12 +64,14 @@ async def create_order(payload: OrderCreate, request: Request):
             INSERT INTO orders (
                 order_number, customer_name, phone_raw, phone_e164,
                 currency, total, event_id, payload,
-                ip_address, geo_country, geo_city
+                ip_address, geo_country, geo_city,
+                is_vpn, address, city, session_id
             )
             VALUES (
                 :order_number, :customer_name, :phone_raw, :phone_e164,
                 :currency, :total, :event_id, CAST(:payload AS JSONB),
-                :ip_address, :geo_country, :geo_city
+                :ip_address, :geo_country, :geo_city,
+                :is_vpn, :address, :city, :session_id
             )
             RETURNING id
             """),
@@ -82,6 +87,10 @@ async def create_order(payload: OrderCreate, request: Request):
                 "ip_address": ip,
                 "geo_country": geo.country,
                 "geo_city": geo.city,
+                "is_vpn": vpn_flag,
+                "address": payload.address,
+                "city": payload.city,
+                "session_id": payload.session_id,
             },
         )
         order_id = result.scalar_one()
