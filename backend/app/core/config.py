@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:3000,https://numapet.store"
     google_sheets_webhook_url: str | None = None
     google_sheets_webhook_secret: str | None = None
+    telegram_bot_token: str | None = None
+    telegram_chat_id: str | None = None
     meta_pixel_id: str | None = None
     meta_capi_access_token: str | None = None
     tiktok_pixel_id: str | None = None

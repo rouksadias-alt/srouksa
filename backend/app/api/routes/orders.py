@@ -10,6 +10,7 @@ from app.db import AsyncSessionLocal
 from app.services.geoip import GeoIPReader, get_client_ip
 from app.services.phone import normalize_panama_phone
 from app.services.sheets import push_order_async
+from app.services.telegram import push_order_async as push_telegram_async
 
 router = APIRouter(prefix="/orders")
 
@@ -96,31 +97,32 @@ async def create_order(payload: OrderCreate, request: Request):
 
         await session.commit()
 
-    push_order_async(
-        {
-            "order_id": str(order_id),
-            "order_number": order_number,
-            "created_at": datetime.utcnow().isoformat() + "Z",
-            "customer_name": payload.customer_name,
-            "phone_raw": payload.phone,
-            "phone_e164": phone_e164,
-            "address": payload.address or "",
-            "city": payload.city or "",
-            "currency": payload.currency,
-            "total": payload.total,
-            "fast_shipping": payload.fast_shipping,
-            "shipping_total": payload.shipping_total,
-            "event_id": payload.event_id,
-            "ip_address": ip,
-            "geo_country": geo.country,
-            "geo_city": geo.city,
-            "items": [item.model_dump() for item in payload.items],
-            "items_summary": ", ".join(
-                f"{item.quantity}× {item.product_name} ({item.offer_label})"
-                for item in payload.items
-            ),
-        }
-    )
+    notification_payload = {
+        "order_id": str(order_id),
+        "order_number": order_number,
+        "created_at": datetime.utcnow().isoformat() + "Z",
+        "customer_name": payload.customer_name,
+        "phone_raw": payload.phone,
+        "phone_e164": phone_e164,
+        "address": payload.address or "",
+        "city": payload.city or "",
+        "currency": payload.currency,
+        "total": payload.total,
+        "fast_shipping": payload.fast_shipping,
+        "shipping_total": payload.shipping_total,
+        "event_id": payload.event_id,
+        "ip_address": ip,
+        "geo_country": geo.country,
+        "geo_city": geo.city,
+        "items": [item.model_dump() for item in payload.items],
+        "items_summary": ", ".join(
+            f"{item.quantity}× {item.product_name} ({item.offer_label})"
+            for item in payload.items
+        ),
+    }
+
+    push_order_async(notification_payload)
+    push_telegram_async(notification_payload)
 
     return {
         "ok": True,
