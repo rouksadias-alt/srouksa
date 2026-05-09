@@ -42,7 +42,7 @@ export const variants: Variant[] = [
     id: "s",
     label: "Talla S",
     size: "Pequeño (hasta 7 kg)",
-    price: 35,
+    price: 39,
     anchor: "Razas pequeñas",
   },
   {
